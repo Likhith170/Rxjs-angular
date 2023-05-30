@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {from, Observable, of} from 'rxjs';
-import { map, filter, last, single} from 'rxjs/operators';
+import {concat, from, interval, merge, Observable, of} from 'rxjs';
+import { map, filter, last, single, take, skip, distinctUntilChanged, debounceTime} from 'rxjs/operators';
 import { fromEvent } from 'rxjs';
 
 @Component({
@@ -13,6 +13,9 @@ export class AppComponent implements OnInit{
 
 array1 = [1, 2, 6, 7, 8];
 array2 = ['A', 'B', 'C'];
+array3 = interval(1000);
+array4 = ['100','200','300'];
+array5 = [3, 5, 5, 9, 11, 11, 13, 5, 9];
 
 myObservable =from(this.array1);
 
@@ -32,9 +35,20 @@ lastObs = this.transformedObs.pipe(last((val)=>{
   return val >= 8;
  }))
 
+ concatObs = concat(from(this.array1), from(this.array2));
+
+ takeObs = this.myObservable.pipe(take(3));
+ 
+ skipObs = this.myObservable.pipe(skip(3));
+
+ mergeObs = merge(from(this.array1), from(this.array2), from(this.array3), from(this.array4));
+
+ distinctUntilChangedObs = from(this.array5).pipe(distinctUntilChanged());
+
+ debouncedIntervalObs = interval(1000).pipe(debounceTime(500));
 
 ngOnInit(){
-  this.lastObs.subscribe((val)=>{
+  this.debouncedIntervalObs.subscribe((val)=>{
     console.log(val);
   },
   (error)=>{
